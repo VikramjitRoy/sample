@@ -1,0 +1,112 @@
+package com.mindtree.serviceimpl;
+
+import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.mindtree.entity.Task;
+import com.mindtree.entity.User;
+import com.mindtree.service.HomeService;
+
+public class HomeServiceImpl implements HomeService {
+	
+	private SessionFactory sessionFactory;
+	
+	
+	/**
+	 * @param sessionFactory
+	 */
+	public HomeServiceImpl(SessionFactory sessionFactory) {
+		System.out.println(sessionFactory);
+		this.sessionFactory = sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	@Override
+	public List<Task> getTaskInbox(String email,SessionFactory sf) {
+		// TODO Auto-generated method stub
+		// Day-wise display for task 
+		System.out.println(sessionFactory);
+		Session session = sf.openSession();
+
+		String SQL_QUERY =" from Task";
+		System.out.println(SQL_QUERY);
+		Query query = session.createQuery(SQL_QUERY);
+
+		List<Task> list = query.list();
+
+		return list;
+
+	}
+
+	@Override
+	public List<Task> getTaskToday(String email) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.openSession();
+		long millis=System.currentTimeMillis();  
+        java.sql.Date date=new java.sql.Date(millis);  
+        System.out.println(date); 
+
+		String SQL_QUERY =" from Task where date= '"+date+" 00:00:00'";
+		System.out.println(SQL_QUERY);
+		Query query = session.createQuery(SQL_QUERY);
+
+		List<Task> list = query.list();
+
+		return list;
+	}
+
+	@Override
+	public List<Task> getTaskWeekly(String email) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.openSession();
+		long millis=System.currentTimeMillis();  
+        java.sql.Date startDate=new java.sql.Date(millis);
+        java.sql.Date endDate=new java.sql.Date(millis+86400000*7);
+        
+		String SQL_QUERY =" from Task where date between '"+startDate+" 00:00:00' and '"+endDate+" 00:00:00'";
+		System.out.println(SQL_QUERY);
+		Query query = session.createQuery(SQL_QUERY);
+
+		List<Task> list = query.list();
+
+		return list;
+	}
+
+	@Override
+	public List<Task> getTaskByProjects(String email,String project) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.openSession();
+
+		String SQL_QUERY =" from User where email='"+email+"' and project = '"+project+"'";
+		System.out.println(SQL_QUERY);
+		Query query = session.createQuery(SQL_QUERY);
+
+		List<Task> list = query.list();
+
+		return list;
+	}
+
+	@Override
+	public List<Task> getTaskByPriority(String email,int priority) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.openSession();
+
+		String SQL_QUERY =" from Task where email='"+email+"' and priority = "+priority;
+		System.out.println(SQL_QUERY);
+		Query query = session.createQuery(SQL_QUERY);
+
+		List<Task> list = query.list();
+
+		return list;
+	}
+
+}
