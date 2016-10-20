@@ -1,0 +1,71 @@
+package com.mindtree.service;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.mindtree.dao.UserDao;
+import com.mindtree.entity.User;
+import com.mindtree.exception.DaoException;
+
+public class UserServiceTest {
+
+	UserService userService;
+	UserDao userDao;
+
+	@Before
+	public void setUp(){
+
+		//Create a userService object which is to be tested		
+		userService = new UserService();		
+
+		//Create the mock object of UserDao service
+		userDao = mock(UserDao.class);		
+
+		//set the userDao to the UserService
+		userService.setUserDao(userDao);
+	}
+
+	@Test
+	public void testIsUserValid() {
+		User firstUser = new User("Supratim","supratim@yahoo.com",23,"asdfg");
+		User secondUser = new User("Vikram", "vik_rocks@ibibo.com",23,"qwerty");
+		User thirdUser = new User("Abhishek", "rajalive@gmail.com",23,"zxcvb");
+		try
+		{
+			doThrow(DaoException.class).when(userDao).getUser("Debarshi","ghosh");
+			//when(userDao.getUser("Vikram", "qwerty")).thenReturn(secondUser);
+			//when(userDao.getUser("Abhishek", "zxcvb")).thenReturn(thirdUser);
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		assertEquals(true,userService.isUserValid("Vikram", "qwerty"));
+		assertEquals(false,userService.isUserValid("Debarshi", "ghosh"));
+	}
+
+	@Test
+	public void testAddUser() {
+		User firstUser = new User("Supratim","supratim@yahoo.com",23,"asdfg");
+		User secondUser = new User("Vikram", "vik_rocks@ibibo.com",23,"qwerty");
+		User thirdUser = new User("Abhishek", "rajalive@gmail.com",23,"zxcvb");
+		assertEquals(true,userService.addUser(firstUser));
+		//assertEquals(true,userService.addUser(firstUser));
+		try
+		{
+			doNothing().when(userDao).addUser(firstUser);
+			doNothing().when(userDao).addUser(firstUser);
+			//doThrow(DaoException.class).when(userDao).addUser(secondUser);
+			verify(userDao,times(1)).addUser(firstUser);
+		}catch(DaoException e)
+		{
+			e.printStackTrace();
+		}
+		/*assertEquals(true, userService.addUser(firstUser));
+		assertEquals(false, userService.addUser(secondUser));*/
+	}
+}
